@@ -1,0 +1,17 @@
+.pageWrapper {
+  padding: 20px;
+}
+
+.headerWrapper {
+  margin-bottom: 20px;
+}
+
+.dataWrapper {
+  flex-grow: 1;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
