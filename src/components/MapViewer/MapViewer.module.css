@@ -1,0 +1,9 @@
+.wrapper {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.map {
+  height: 70vh;
+  width: 100%;
+}
