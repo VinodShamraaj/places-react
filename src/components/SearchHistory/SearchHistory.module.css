@@ -1,0 +1,6 @@
+.wrapper {
+  padding: 12px;
+  height: 70vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}
