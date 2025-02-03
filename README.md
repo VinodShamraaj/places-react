@@ -50,5 +50,3 @@ This will run the app at [http://localhost:3000](http://localhost:3000).
 - For any issues, check the console for errors or refer to the Google Maps API documentation.
 
 ---
-
-This README includes all the necessary steps for setting up the app and highlights the need for the Google API key in the `.env` file. You can customize it further based on your project needs.
