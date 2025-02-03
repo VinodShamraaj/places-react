@@ -1,18 +1,45 @@
-import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import {
+  DEFAULT_LAT,
+  DEFAULT_LNG,
+  DEFAULT_LOCATION_NAME,
+} from "common/constants/coordinates";
 
 const initialState = {
   places: [],
-  searchResults: [],
-  favorites: [],
+  selectedPlace: {
+    name: DEFAULT_LOCATION_NAME,
+    lat: DEFAULT_LAT,
+    lng: DEFAULT_LNG,
+  },
+  searchHistory: [],
 };
 
 const placeSlice = createSlice({
-  name: 'places',
+  name: "places",
   initialState,
   reducers: {
-    setSearchResults: (state, action) => {
-      state.searchResults = action.payload;
+    setSelectedPlace: (state, action) => {
+      state.selectedPlace = action.payload;
+    },
+    addSeachHistory: (state, action) => {
+      state.searchHistory.push(action.payload);
+    },
+    clearSearchHistory: (state) => {
+      state.searchHistory = [];
+    },
+    setSearchFavorite: (state, action) => {
+      const { index, newData } = action.payload;
+
+      // Set the favorite value for 1 search history item
+      if (index >= 0 && index < state.searchHistory.length) {
+        state.searchHistory[index] = {
+          ...state.searchHistory[index],
+          favorite: newData,
+        };
+      }
+      console.log(index, newData);
     },
     addFavorite: (state, action) => {
       state.favorites.push(action.payload);
@@ -23,34 +50,49 @@ const placeSlice = createSlice({
   },
 });
 
-
-
-// Fetch places from Google API
-export const fetchPlaces = (query) => async (dispatch) => {
+export const saveSearchHistory = (place) => async (dispatch) => {
   try {
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/place/autocomplete/json`, {
-      params: {
-        input: query,
-        key: process.env.GOOGLE_API_KEY,
-      },
-    });
-    dispatch(setSearchResults(response?.data?.predictions));
+    console.log("hi");
+    let placeObject = { ...place };
+
+    // Check if place is already favorited
+    const query = await axios.get(
+      `http://localhost:8080/favorite/${place.name}`
+    );
+
+    if (query.data.data) {
+      placeObject.favorite = true;
+    }
+    await dispatch(addSeachHistory(placeObject));
   } catch (error) {
-    console.error('Error fetching places:', error);
+    console.error("Error saving favorite:", error);
   }
 };
 
+export const saveFavorite = (index, place) => async (dispatch) => {
+  try {
+    let placeObject = { ...place };
+    delete placeObject.favorite;
+    const response = await axios.post(
+      "http://localhost:8080/favorite/new",
+      placeObject
+    );
 
-// TODO: Implement this with backend
-// export const saveFavorite = (place) => async (dispatch) => {
-//   try {
-//     const response = await axios.post('http://localhost:8080/api/favorites', place);
-//     dispatch(addFavorite(response.data));
-//   } catch (error) {
-//     console.error('Error saving favorite:', error);
-//   }
-// };
+    if (!response.error) {
+      console.log("i here");
+      dispatch(setSearchFavorite({ index, newData: true }));
+    }
+  } catch (error) {
+    console.error("Error saving favorite:", error);
+  }
+};
 
-export const { setSearchResults, addFavorite, setPlaces } = placeSlice.actions;
+export const {
+  setSelectedPlace,
+  addSeachHistory,
+  clearSearchHistory,
+  setSearchFavorite,
+  setPlaces,
+} = placeSlice.actions;
 
 export default placeSlice.reducer;
