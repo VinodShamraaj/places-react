@@ -1,7 +1,3 @@
-Sure! Here's a concise and clear README for your CRA (Create React App) project:
-
----
-
 # Google Autocomplete App
 
 This is a simple React app built with Create React App (CRA). It integrates with Google Maps API and displays some interactive features on the page.
